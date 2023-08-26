@@ -67,13 +67,13 @@ WHERE TABLE_NAME='Employee'
 --4.
 create synonym emp for HumanResource.employee
 --a.
-Select * from Employee -- error
+Select * from Employee 
 --b.
 Select * from humanresource.Employee
 --c.
 Select * from Emp
 --d.
-Select * from humanresource.Emp --error
+Select * from humanresource.Emp 
 ---------------------------------------------------------------
 --5.
 update company.project
