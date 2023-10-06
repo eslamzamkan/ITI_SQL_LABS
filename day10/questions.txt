@@ -1,0 +1,185 @@
+8.What is the difference between the following objects in SQL Server*/
+/*
+1.batch, script and transaction
+
+batch:is a collection of commands that need to be executed without guaranteed of success or fail.
+
+transaction:is a collection of commands that are guaranteed to succeed or fail totally.
+Transactions won't complete half the commands and then fail on the rest, if one fails they all fail.
+
+script: is a collection of structured query language (SQL) commands that are stored in a text file and perform some operation or task
+
+
+2.trigger and stored procedure
+
+A stored procedure is a piece of code that resides in and is executed by the DBMS and can be called explicitly by the client or by other stored procedures.
+It is usually written in a procedural extension of SQL, such as PL/SQL under Oracle or T-SQL under MS SQL Server, 
+but some DBMSes support more general languages such as Java or .NET as well.
+
+A trigger is a (sort of) stored procedure that cannot be called explicitly, and instead executes automatically in response to events
+such as insertion, update or deletion or rows in a table.
+
+Trigger can not be called manually where stored procedure can be called manually
+Trigger executes automatically when event happens and can be use for reporting and data protection from deleting or dropping the table and data from database. 
+We can prevent from trigger. On the other hand, a stored procedure has to be called by somebody.
+A stored procedure can be called from front end (client application) but trigger can not be called from client application.
+Stored procedure can take input parameters, but we can't pass parameters as input to a trigger
+
+3.stored procedure and functions
+Functions can be used in JOIN clauses but Stored procedures cannot be used in JOIN clauses
+Functions can be called from a Select statement but Stored procedures cannot be called from a Select/Where or Having statements.
+Execute statement has to be used to execute a stored procedure.
+Cannot call a stored procedure from a function but Can call a function from a stored procedure.
+Cannot have transactions within a function but Can have transactions within a stored procedure.
+
+4.drop, truncate and delete statement
+
+-delete is a dml command that remove data from table not to remove table from database and it use where statement
+that don’t remove table structure and keeps the auto-increment ID in the table and can be rolled back
+
+-truncate is a similar like delete but it's a ddl command and remove records from table without using where 
+this transactions can be rolled back in database engines like SQL Server and PostgreSQL, but not in MySQL and Oracle
+TRUNCATE is faster than DELETE, as it doesn't scan every record before removing it
+TRUNCATE TABLE locks the whole table to remove data from a table; thus, this command also uses less transaction space than DELETE
+TRUNCATE does not return the number of rows deleted from the table. It also resets the table auto-increment value to the starting value (usually 1).
+
+-The drop TABLE is another DDL (Data Definition Language) operation. But it is not used for simply removing data from a table; 
+it deletes the table structure from the database, along with any data stored in the table.
+The DROP TABLE operation removes the table definition and data as well as the indexes, constraints, and triggers related to the table.
+This command frees the memory space.
+No triggers are fired when executing DROP TABLE
+
+5.select and select into statement
+select use to retrieve data from tables 
+The select into statement copies data from one table into a new table SELECT INTO can also be used to create a new, 
+empty table using the schema of another. Just add a WHERE clause that causes the query to return no data:
+
+6.local and global variables
+
+-Global Variable: Outside of all the functions
+-Local Variable: Within a function block
+-Global variables are those variables which are declared outside of all the functions or block and can be accessed globally in a program.
+It can be accessed by any function present in the program.
+Once we declare a global variable, its value can be varied as used with different functions
+-local These variables can only be accessed within the function in which they are declared.
+The lifetime of the local variable is within its function only, which means the variable exists till the function executes. Once function execution is completed, local variables are destroyed and no longer exist outside the function.
+The reason for the limited scope of local variables is that local variables are stored in the stack, which is dynamic in nature and automatically cleans up the data stored within it.
+But by making the variable static with "static" keyword, we can retain the value of local variable.
+
+7.convert and cast statements
+
+The CAST and CONVERT functions are both used to convert data from one data type to another
+CAST is ANSI-SQL compliant; therefore, more apt to be used in other database implementation.
+There is no performance penalty using CAST.
+CAST is ANSI SQL (meaning it's part of the overall SQL standard) while CONVERT isn't. Migrating SQL code between different database systems
+is a bit easier if you stick with ANSI standard SQL
+(Convert is a SQL server only function and Cast is more generic(can be used in other dbms).Convert provides more flexability than Cast. 
+So if you are trying to choose which one to use, I would suggest Cast unless you have a specific reason to use Convert. As a suggestion;
+Dates, times : Convert
+Decimals, numerics : Cast)
+
+8.DDL,DML,DCL,DQL and TCL
+
+DDL or Data Definition Language actually consists of the SQL commands that can be used to define the database schema. It simply deals with descriptions of the database schema
+and is used to create and modify the structure of database objects in the database. DDL is a set of SQL commands used to create, modify, and delete database structures but not data.
+These commands are normally not used by a general user, who should be accessing the database via an application.
+
+DQL (Data Query Language)
+statements are used for performing queries on the data within schema objects
+
+
+DML
+It is the component of the SQL statement that controls access to data and to the database
+
+DCL 
+includes commands such as GRANT and REVOKE which mainly deal with the rights, permissions, and other controls of the database system. 
+
+TCL (Transaction Control Language)
+Transactions group a set of tasks into a single execution unit. Each transaction begins with a specific task and ends
+when all the tasks in the group successfully complete. If any of the tasks fail, the transaction fails.
+Therefore, a transaction has only two results: success or failure
+
+9.For xml raw and for xml auto
+The RAW mode generates a single element per row in the rowset that is returned by the SELECT statement. You can generate XML hierarchy by writing nested FOR XML queries.
+The AUTO mode generates nesting in the resulting XML by using heuristics based on the way the SELECT statement is specified. 
+You have minimal control over the shape of the XML generated. The nested FOR XML queries can be written to generate 
+XML hierarchy beyond the XML shape that is generated by AUTO mode heuristics
+
+
+10.Table valued and multi statemcent function
+A table-valued function is a user-defined function that returns data of a table type. The return type of a table-valued function is a table, 
+therefore, you can use the table-valued function just like you would use a table.
+A multi-statement table-valued function or MSTVF is a table-valued function that returns the result of multiple statements
+The multi-statement-table-valued function is very useful because you can execute multiple queries within the function and aggregate results into the returned table
+
+11.Varchar(50) and varchar(max)
+Varchar is not Unicode and takes 1 byte per char
+Nvarchar is Unicode and takes 2 byte par char
+Max takes maximum size, it can have.
+VarBinary stores value in bit format (0 or 1), it is mainly used for security.
+A VARCHAR(MAX) column will accept a value of 51 characters or more whereas a VARCHAR(50) column will not. So if you have a business rule
+that restricts a value to 50 characters, VARCHAR(50) will be more appropriate.
+
+12.Datetime(3), datetime2(7) and datetimeoffset(7)
+If you need to include a time zone offset, then you’ll need to use datetimeoffset.
+If not, then use datetime2, as you’ll save storage space and eliminate any potential issues with having a (potentially wrong) time zone offset in your data
+Both variables use a scale of 7, which means they have 7 decimal places.
+DateTime2(3) have the same number of digits as DateTime but uses 7 bytes of storage instead of 8 byte
+
+13.Default instance and named instance
+The main difference between default instance and named instance in SQL server is that a SQL server can have only one default instance, but it can have multiple named instances
+A default instance is a type of instance that is used when installing a single instance of SQL server. In contrast,
+a named instance is a type of instance where the user specifies an instance name when installing the instance
+Named instances are all instances other than the default instance. When the programmer gives a name to the instance when installing it,
+is a named instance. In other words, the user determines a named instance during the setup. 
+Also, it is possible to install SQL Server as a named instance without installing the default instance first.
+
+
+14.SQL and windows Authentication
+SQL Server authentication can be used on the same machine as SQL Server or on a remote connection. If you work in an Active Directory environment,
+Windows authentication is recommended to use. If you work in a non-Active Directory environment, you can utilize SQL Server authentication for database connections.
+When you are accessing SQL Server from the same computer it is installed on, you shouldn't be prompted to type in an username and password.
+And you are not, if you're using Windows Authentication. With Windows Authentication, the SQL Server service already knows that someone is logged in
+into the operating system with the correct credentials
+Windows authentication does provide more security and flexibility for managing logins in SQL Server.
+
+15.Clustered and non-clustered index
+A clustered index is faster And non-clustered index is slower.
+The clustered index requires less memory for operations And non-Clustered index requires more memory for operations
+the clustered index is the main data and In the Non-Clustered index, the index is the copy of data
+A table can have only one clustered index And table can have multiple non-clustered indexes
+The clustered index has the inherent ability to store data on the disk And non-Clustered index does not have the inherent ability to store data on the disk.
+	
+16.Group by rollup and group by cube
+With GROUP BY ROLLUP(...) is similar to CUBE but works hierarchically by filling colums from left to right.
+rollup and cube is GROUPING SET operator. Roll-up is a multidimensional aggrigation and treating element in hierarchical manner
+And in cube rather than treating element hierarchically a cube does the same thing accross all dimension. You can try grouping_id to understand the level of abstraction
+There is only one major difference between the functionality of the ROLLUP operator and the CUBE operator. ROLLUP operator generates aggregated results for
+the selected columns in a hierarchical way. On the other hand, CUBE generates a aggregated result that contains all the possible combinations for the selected columns.
+
+17.Sequence object and identity 
+The IDENTITY property is tied to a particular table and cannot be shared among multiple tables since it is a table column property.
+On the flip side the SEQUENCE object is defined by the user and can be shared by multiple tables since is it is not tied to any table.
+To generate the next IDENTITY value, a new row has to be inserted into the table. On the other hand, the next VALUE for a SEQUENCE object
+can simply be generated using the NEXT VALUE FOR clause with the sequence object.
+The value for the IDENTITY property cannot be reset to its initial value. In contrast, the value for the SEQUENCE object can be reset.
+
+18.Inline function and view
+
+A function allows you to pass in parameters to create a more specific view. Lets say you wanted to have grab customers based on state. 
+A function would allow you to pass in the state you are looking for and give you all the customers by that state. A view can't do that.
+A function performs a task, or many tasks. A view retrieves data via a query. What ever fits in that query is what you are limited too. In a function I can update, 
+select, create table variables, delete some data, send an email, interact with a CLR that I create, etc. Way more powerful than a lowly view!
+
+19.Table variable and temporary table 
+
+The syntax for creating table variables is quite similar to creating either regular or temporary tables. The only differences 
+involve a naming convention unique to variables in general, and the need to declare the table variable as you would any other local variable in Transact SQL
+
+20.Row_number() and dense_Rank() function
+
+-the ROW_NUMBER function simply returns the row number of the sorted records starting with 1. For example, if RANK and DENSE_RANK functions of
+the first two records in the ORDER BY column are equal, both of them are assigned 1 as their RANK and DENSE_RANK. However,
+ the ROW_NUMBER function will assign values 1 and 2 to those rows without taking the fact that they are equally into account.
+
+-DENSE_RANK function does not skip any ranks if there is a tie between the ranks of the preceding records
