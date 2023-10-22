@@ -1,0 +1,151 @@
+use [SD32-Company]
+
+/*1*/ 
+select * 
+	from hr.employee
+for XML	raw ('employee') , elements 
+
+select * 
+	from hr.employee
+for XML raw('employee')
+
+/*2*/
+use ITI
+select D.Dept_Name, I.Ins_Name
+	from Department D, Instructor I
+where I.Dept_Id = D.Dept_Id
+for xml auto 
+
+select D.Dept_Name, I.Ins_Name
+	from Department D, Instructor I
+where I.Dept_Id = D.Dept_Id
+for xml path ('Info')
+
+/*3*/
+USE Company_SD
+
+declare @docs xml ='<customers>
+              <customer FirstName="Bob" Zipcode="91126">
+                     <order ID="12221">Laptop</order>
+              </customer>
+              <customer FirstName="Judy" Zipcode="23235">
+                     <order ID="12221">Workstation</order>
+              </customer>
+              <customer FirstName="Howard" Zipcode="20009">
+                     <order ID="3331122">Laptop</order>
+              </customer>
+              <customer FirstName="Mary" Zipcode="12345">
+                     <order ID="555555">Server</order>
+              </customer>
+       </customers>'
+
+declare @doc int 
+	execute sp_xml_preparedocument @doc output, @docs 
+
+select * from openxml (@doc, '//customer')
+	with (FirstName varchar(20) '@FirstName', 
+		  Zipcode int  '@Zipcode',
+		  order_ varchar(20) '@order',
+		  ID int '@ID')
+		  
+execute sp_xml_removedocument @doc
+
+/*4*/
+use iti
+create procedure P1 as 
+		select count(S.st_id), D.Dept_Id
+			from access.student S, Department D
+		where S.Dept_Id = D.Dept_Id
+		group by D.Dept_Id
+
+/*5*/ 
+use Company_SD
+alter procedure P2
+	as 
+		if(select count(e.SSN)
+				from Employee E, Project P, Works_for W
+			where E.SSN = w.ESSn
+			and   p.Pnumber = w.Pno
+			and p.Pname = 'P1') >= 3
+				select 'The number of employees in the project p1 is 3 or more'
+		else 
+				select 'The following employees work for the project p1 ' + Employee.Fname + ' '+ Employee.Lname 
+					from  Employee
+				where Dno = 'P1'
+
+/*6*/   
+create procedure P3 @oldemps int , @newemps int, @pnum int 
+as 
+	update Works_for
+		set ESSn = @newemps
+			where ESSn = @oldemps and Pno = @pnum
+
+/*7*/
+use [SD32-Company]
+create table audit_
+(ProjectNo int, UserName varchar(30), ModifiedDate date, Budget_Old int, Budget_New int)
+
+
+create trigger company.t1audit on company.project
+	instead of update as 
+		if update (budget)
+			begin 
+				declare @old int , @new int, @num varchar(20)
+				select @old = budget from deleted
+				select @new = budget from inserted
+				select @num = ProjectNo from deleted
+				insert into audit_
+				values (@num, SUSER_NAME(), getdate(), @old, @new)
+			end
+
+/*8*/
+use ITI
+create trigger limit
+on department 
+	instead of insert 
+	as 
+select 'you can�t insert a new record in that table'
+
+/*9*/ 
+use Company_SD
+
+alter trigger prevent 
+on employee 
+after insert as if FORMAT(GETDATE(), 'MMMM') = 'March'
+	begin
+	select 'Prevented'
+	delete from Employee where SSN= (select SSN from deleted)
+	end
+
+/*10*/ 
+create trigger prevent1 
+	on database
+		for alter_table 
+as 
+	select 'prevented'
+	rollback
+
+
+/*11*/
+use iti
+--alter schema access transfer audit__3
+create table audit__3
+	(Server_User_Name varchar(50), date_ date, Note varchar(50))
+
+create trigger access.t1
+on access.student 
+after insert as  
+		declare @id2 varchar (50) = (select St_id from inserted)
+		declare @notes varchar(50) = (select SUSER_NAME() + ' Insert New Row with Key =' + @id2 + ' in table Student')
+		 insert into access.audit__3
+		 values (SUSER_NAME(), GETDATE(), @notes)
+
+/*12*/
+create trigger access.t2
+on access.student
+instead of delete as 
+		declare @id3 int = (select st_id from deleted)
+		declare @name varchar(30) = (suser_name()+ 'try to delete Row with Key ' + @id3 )
+		insert into access.audit__3 
+		values (SUSER_NAME(), GETDATE(), @name)
+
