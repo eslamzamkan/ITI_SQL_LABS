@@ -1,0 +1,57 @@
+Problem 1
+First Normalization :
+1- Department ( Depart_No PK , Depart_Name , Location , Telephone , Mgr_ID_No , Mgr_name )
+2- Customer ( (Depart_No ,Cust_No) PK , Cust_Name , Date_of_Complaint , Nature_of_Complaint)
+
+
+Second Normalization :
+1- Not Changed
+2- Customer ( Cust_No PK , Cust_Name )
+3- Cust_Depart_Complaint  ((Depart_No ,Cust_No) PK , Date_of_Complaint , Nature_of_Complaint)
+
+
+Third Normalization :
+2- Not Changed
+3- Not Changed
+1- Department ( Depart_No PK , Depart_Name , Location , Telephone , Mgr_ID_No FK )
+4- Manager ( Mgr_ID_No PK ,  Mgr_name )
+
+Final Database Design for Problem 1:
+1- Department ( Depart_No PK , Depart_Name , Location , Telephone , Mgr_ID_No FK )
+2- Manager ( Mgr_ID_No PK ,  Mgr_name )
+3- Customer ( Cust_No PK , Cust_Name )
+4- Cust_Depart_Complaint ((Depart_No ,Cust_No) PK , Date_of_Complaint , Nature_of_Complaint)
+
+Problem 2
+First Normalization :
+1- Employee ( Emp-No PK , Emp-Name , Dept_Name , Dept_Manager )
+2- Employee_Projects (( Emp-No , Proj-id ) PK , Proj-Start-Date , Wks-on-Proj , Location )
+
+
+
+Second Normalization :
+1- Not Changed.
+2- Employee_Projects (( Emp-No , Proj-id ) PK , Proj-Start-Date , Weeks-on-Project )
+3- Projects_Locations (( Proj-id , Location ) PK )
+
+
+
+Third Normalization :
+
+3- Not Changed.
+2- Not Changed.
+1- Employee ( Emp-No PK , Emp-Name , Dept_Name FK )
+4- Department ( Dept_Name PK , Dept_Manager )
+
+
+Final Database Design for Problem 2:
+
+1- Employee ( Emp-No PK , Emp-Name , Dept_Name FK )
+2- Department ( Dept_Name PK , Dept_Manager )
+3- Employee_Projects (( Emp-No , Proj-id ) PK , Proj-Start-Date , Weeks-on-Project )
+4- Projects_Locations (( Proj-id , Location ) PK )
+
+
+
+
+
